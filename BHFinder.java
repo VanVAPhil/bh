@@ -1,4 +1,4 @@
-package newSHit;
+package kunganolang;
 
 import java.util.*;
 
@@ -6,13 +6,12 @@ public class BHFinder {
 
 	public static boardinghouses hey = new boardinghouses();
 	public static Scanner sc = new Scanner(System.in);
-	public static String tempBH[][] = new String[hey.arrnum][hey.BHPeople[0].length];
-	public static int arrIndex[] = new int[hey.arrnum];
+	public static String tempBH[][] = new String[hey.BUCampuses.length][hey.arrnum];
+	public static int arrIndex[][]= new int[hey.BHouses.length][hey.arrnum];
 	public static int rangeOccupants = 0, rangePrice = 0, rangeDistance = 0;
 	public static boolean usedFilter = false;
 	
 	public static void main(String[] args) {
-		
 
 		for(int i=0;i<hey.BUCampuses.length;i++)
 			System.out.print("\t"+hey.BUCampuses[i]+"\t");
@@ -27,7 +26,7 @@ public class BHFinder {
 	public static String campusFinder(String campus) {
 
 		if(Arrays.asList(hey.lowerCBUCampuses).contains(campus.toLowerCase()))
-			System.out.println("LIST OF AVAILABLE BOARDING HOUSES");	
+			System.out.println("\nLIST OF AVAILABLE BOARDING HOUSES");	
 		for(int i = 0; i < hey.BUCampuses.length; i++) {
 			if(campus.equalsIgnoreCase(hey.BUCampuses[i]) || campus.equalsIgnoreCase(hey.lowerBUCampuses[i])) {
 				for(int j = 0; j < hey.BHouses.length-1; j++) {
@@ -134,12 +133,13 @@ public class BHFinder {
 		System.out.print("Do you want to search for more[Y/N]? ");
 		String choice= sc.nextLine();
 		if(choice.equalsIgnoreCase("y")||choice.equalsIgnoreCase("yes")) {
+			System.out.println();
 			resetBH();
 			campusFinder(campus);
 			options(campus);
 		}
 		else if(choice.equalsIgnoreCase("n")||choice.equalsIgnoreCase("no")) {
-			System.out.println("THANK YOU FOR BROWSING");
+			System.out.println("\nTHANK YOU FOR BROWSING");
 			System.exit(0);
 		}
 		else 
@@ -189,11 +189,11 @@ public class BHFinder {
 			System.out.print("\nPick an Occupants Range: ");
 				try {
 					rangeOccupants = Integer.parseInt(sc.nextLine());
-					if(rangeOccupants != 0) {
+					if(rangeOccupants != 0 && rangeOccupants != 5) {
 						usedFilter = true;
 					}
 					else if(rangeOccupants == 5) {
-						occupantsBubbleSort(tempBH, campus);
+						occupantsBubbleSort(campus);
 						wantMorePanel(campus);
 						break;
 					}
@@ -240,7 +240,7 @@ public class BHFinder {
 			System.out.print("\nPick an Distance Range: ");
 				try {
 					rangeDistance = Integer.parseInt(sc.nextLine());
-					if(rangeDistance != 0 && rangeDistance!=6) {
+					if(rangeDistance != 0 && rangeDistance != 6) {
 						usedFilter = true;
 					}
 					else if(rangeDistance==6) {
@@ -427,25 +427,28 @@ public class BHFinder {
 		return i;
 	}
 	
-	public static String[][] occupantsBubbleSort(String[][] tempBH, String campus) {
-		tempBH = hey.BHPeople;
-		int j = campusChecker(campus);
+	public static void occupantsBubbleSort(String campus) {
+		int x = campusChecker(campus);
+		String tempBHPeople[] = new String[hey.BHPeople[x].length];
+		for(int i = 0; i < hey.BHPeople[x].length; i++) {
+			tempBHPeople[i] = hey.BHPeople[x][i];
+		}
 		
 		for(int i = 0; i < hey.arrnum; i++) {
-			arrIndex[j][i] = i;
+			arrIndex[x][i] = i;
 		}
 		
 		boolean sorted = false;
 		while(!sorted) {
 			boolean swapped = false;
-			for(int i = 1; i < tempBH[j].length; i++) {
-				if(Integer.parseInt(tempBH[j][i]) < Integer.parseInt(tempBH[j][i-1])) {
-					String temp = tempBH[j][i-1];
-					int tempnum = arrIndex[j][i-1];
-					tempBH[j][i-1] = tempBH[j][i];
-					arrIndex[j][i-1] = arrIndex[j][i];
-					tempBH[j][i] = temp;
-					arrIndex[j][i] = tempnum;
+			for(int i = 1; i < tempBHPeople.length; i++) {
+				if(Integer.parseInt(tempBHPeople[i]) < Integer.parseInt(tempBHPeople[i-1])) {
+					String temp = tempBHPeople[i-1];
+					int tempnum = arrIndex[x][i-1];
+					tempBHPeople[i-1] = tempBHPeople[i];
+					arrIndex[x][i-1] = arrIndex[x][i];
+					tempBHPeople[i] = temp;
+					arrIndex[x][i] = tempnum;
 					swapped = true;
 				}
 			}
@@ -454,71 +457,82 @@ public class BHFinder {
 			}
 		}
 		
-		for(int k = 0; k < hey.BHouses[j].length; k++) {
-			System.out.println((k+1) + ". " + hey.BHouses[j][arrIndex[j][k]] + ": " 
-					+ "\nTotal Occupants in a Room: " + tempBH[j][k]
-					+ "\nPrice: " + hey.BHPrice[j][arrIndex[j][k]] 
-					+ "\nDistance: "+ hey.BHDistance[j][arrIndex[j][k]] + "\n");
-		}		
-		
-		return tempBH;
+		for(int k = 0; k < hey.BHouses[x].length; k++) {
+			System.out.println((k+1) + ". " + hey.BHouses[x][arrIndex[x][k]] + ": " 
+					+ "\nTotal Occupants in a Room: " + tempBHPeople[k]
+					+ "\nPrice: " + hey.BHPrice[x][arrIndex[x][k]] 
+					+ "\nDistance: "+ hey.BHDistance[x][arrIndex[x][k]] + "\n");
+		}
+
 	}
 	
 	public static void priceInsertionSort(String campus) {
 		int x = campusChecker(campus);
+		String tempBHPrice[] = new String[hey.BHPrice[x].length];
+		for(int i = 0; i < hey.BHPrice[x].length; i++) {
+			tempBHPrice[i] = hey.BHPrice[x][i];
+		}
+		
 		for(int i=0; i < hey.arrnum; i++)
-			arrIndex[i]=i;
+			arrIndex[x][i] = i;
 		
 		for(int i=1; i < hey.BHPrice.length-1; i++)
 		{
-			String temp= hey.BHPrice [x][i];
-			int tempNum= arrIndex[i];
-			int j= i-1;
-			while(j>=0 && Integer.parseInt(hey.BHPrice[x][j]) > Integer.parseInt(temp))
+			String temp = tempBHPrice[i];
+			int tempNum = arrIndex[x][i];
+			int j = i-1;
+			while(j >= 0 && Integer.parseInt(tempBHPrice[j]) > Integer.parseInt(temp))
 			{
-				arrIndex[j+1]=arrIndex[j];
-				hey.BHPrice[x][j+1]=hey.BHPrice[x][j];
+				arrIndex[x][j+1] = arrIndex[x][j];
+				tempBHPrice[j+1] = tempBHPrice[j];
 				j--;		
 			}
-			hey.BHPrice[x][j+1]=temp;
-			arrIndex[j+1]=tempNum;
+			tempBHPrice[j+1] = temp;
+			arrIndex[x][j+1] = tempNum;
 		}	
 		
 		for(int j = 0; j < hey.BHouses[x].length; j++) {
-				System.out.println((j+1) + ". " + hey.BHouses[x][arrIndex[j]] + ": " 
-						+ "\nTotal Occupants in a Room: " + hey.BHPeople[x][arrIndex[j]]
-						+ "\nPrice: " + hey.BHPrice[x][j]
-						+ "\nDistance: "+ hey.BHDistance[x][arrIndex[j]]+ "\n");
-		}		
+				System.out.println((j+1) + ". " + hey.BHouses[x][arrIndex[x][j]] + ": " 
+						+ "\nTotal Occupants in a Room: " + hey.BHPeople[x][arrIndex[x][j]]
+						+ "\nPrice: " + tempBHPrice[j]
+						+ "\nDistance: "+ hey.BHDistance[x][arrIndex[x][j]]+ "\n");
+		}	
+		
 	}
 	
 	public static void distanceSelectionSort(String campus) {
 		int x = campusChecker(campus);
-		for(int i=0; i < hey.arrnum; i++)
-			arrIndex[i]=i;
+		String tempBHDistance[] = new String[hey.BHDistance[x].length];
+		for(int i = 0; i < hey.BHDistance[x].length; i++) {
+			tempBHDistance[i] = hey.BHDistance[x][i];
+		}
+		
+		for(int i = 0; i < hey.arrnum; i++)
+			arrIndex[x][i] = i;
 		
 		
-		for(int i=0;i<hey.BHDistance[x].length-1;i++) {
-			for(int j=i+1; j<=hey.BHDistance[x].length-1;j++) {
-				if(Integer.parseInt(hey.BHDistance[x][i]) < Integer.parseInt(hey.BHDistance[x][j])) {
+		for(int i = 0; i < tempBHDistance.length-1; i++) {
+			for(int j = i+1; j <= tempBHDistance.length-1; j++) {
+				if(Integer.parseInt(tempBHDistance[i]) < Integer.parseInt(tempBHDistance[j])) {
 					continue;
 				} else {
-					String temp=hey.BHDistance[x][i];
-					int tempNum= arrIndex[i];
-					hey.BHDistance[x][i] = hey.BHDistance[x][j];
-					arrIndex[i]= arrIndex[j];
-					hey.BHDistance[x][j] = temp;
-					arrIndex[j]= tempNum;
+					String temp = tempBHDistance[i];
+					int tempNum = arrIndex[x][i];
+					tempBHDistance[i] = tempBHDistance[j];
+					arrIndex[x][i] = arrIndex[x][j];
+					tempBHDistance[j] = temp;
+					arrIndex[x][j] = tempNum;
 				}
 			}
 		}
 			
 		
 		for(int j = 0; j < hey.BHouses[x].length; j++) {
-				System.out.println((j+1) + ". " + hey.BHouses[x][arrIndex[j]] + ": " 
-						+ "\nTotal Occupants in a Room: " + hey.BHPeople[x][arrIndex[j]]
-						+ "\nPrice: " + hey.BHPrice[x][arrIndex[j]]
-						+ "\nDistance: "+ hey.BHDistance[x][j]+ "\n");
-		}		
+				System.out.println((j+1) + ". " + hey.BHouses[x][arrIndex[x][j]] + ": " 
+						+ "\nTotal Occupants in a Room: " + hey.BHPeople[x][arrIndex[x][j]]
+						+ "\nPrice: " + hey.BHPrice[x][arrIndex[x][j]]
+						+ "\nDistance: "+ tempBHDistance[j]+ "\n");
+		}	
+		
 	}
 }
