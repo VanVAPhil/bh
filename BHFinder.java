@@ -219,7 +219,7 @@ public class BHFinder {
 						usedFilter = true;
 					}
 					else if(rangePrice==6) {
-						priceInsertionSort(campus);
+						priceQuickSort(campus);
 						wantMorePanel(campus);
 					}
 					filterPanel(campus);
@@ -466,38 +466,64 @@ public class BHFinder {
 
 	}
 	
-	public static void priceInsertionSort(String campus) {
+	public static void priceQuickSort(String campus) {
 		int x = campusChecker(campus);
-		String tempBHPrice[] = new String[hey.BHPrice[x].length];
-		for(int i = 0; i < hey.BHPrice[x].length; i++) {
+		String tempBHPrice[] = new String[hey.BHPrice[x].length];		
+		
+		
+		for(int i = 0; i < hey.BHPrice[x].length; i++)
 			tempBHPrice[i] = hey.BHPrice[x][i];
-		}
 		
 		for(int i=0; i < hey.arrnum; i++)
 			arrIndex[x][i] = i;
 		
-		for(int i=1; i < hey.BHPrice.length-1; i++)
-		{
-			String temp = tempBHPrice[i];
-			int tempNum = arrIndex[x][i];
-			int j = i-1;
-			while(j >= 0 && Integer.parseInt(tempBHPrice[j]) > Integer.parseInt(temp))
-			{
-				arrIndex[x][j+1] = arrIndex[x][j];
-				tempBHPrice[j+1] = tempBHPrice[j];
-				j--;		
-			}
-			tempBHPrice[j+1] = temp;
-			arrIndex[x][j+1] = tempNum;
-		}	
+		quickSort(tempBHPrice, arrIndex[x], 0, hey.BHPrice[x].length-1, x);		
 		
 		for(int j = 0; j < hey.BHouses[x].length; j++) {
-				System.out.println((j+1) + ". " + hey.BHouses[x][arrIndex[x][j]] + ": " 
-						+ "\nTotal Occupants in a Room: " + hey.BHPeople[x][arrIndex[x][j]]
-						+ "\nPrice: " + tempBHPrice[j]
-						+ "\nDistance: "+ hey.BHDistance[x][arrIndex[x][j]]+ "\n");
-		}	
+			System.out.println((j+1) + ". " + hey.BHouses[x][arrIndex[x][j]] + ": " 
+					+ "\nTotal Occupants in a Room: " + hey.BHPeople[x][arrIndex[x][j]]
+					+ "\nPrice: " + tempBHPrice[j]
+					+ "\nDistance: "+ hey.BHDistance[x][arrIndex[x][j]]+ "\n");
+		}
 		
+		
+	}
+	
+	public static void quickSort(String tempArr[], int arrTempIndex[], int initial, int last, int x) 
+	{  	
+	      if (initial < last)  
+	      {  	    	  
+	    	  int pivot = Integer.parseInt(tempArr[last]); 
+		      int i = initial - 1;  
+		    		      
+		      for (int j = initial; j <= last - 1; j++)  
+		      {  	   
+		          if (Integer.parseInt(tempArr[j]) < pivot)  
+		          {  
+		              i++; 
+		              String temp = tempArr[i];  
+		              tempArr[i] = tempArr[j];  
+		              tempArr[j] = temp;  
+		              
+		              int tempNum = arrTempIndex[i];  
+		              arrTempIndex[i] = arrTempIndex[j];  
+		              arrTempIndex[j] = tempNum;
+		          }  
+		      }  
+		      String temp = tempArr[i+1];  
+		      tempArr[i+1] = tempArr[last];  
+		      tempArr[last] = temp;  
+		      
+		      int tempNum = arrTempIndex[i+1];  
+		      arrTempIndex[i+1] = arrTempIndex[last];  
+		      arrTempIndex[last] = tempNum;  
+		      
+		      int partitionIndex = i + 1;
+	    	  
+		      quickSort(tempArr, arrTempIndex, initial, partitionIndex - 1, x);  
+		      quickSort(tempArr, arrTempIndex, partitionIndex + 1, last, x);        
+	      }  
+			
 	}
 	
 	public static void distanceSelectionSort(String campus) {
